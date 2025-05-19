@@ -45,11 +45,13 @@ def contour_detection(image_path):
         cv2.drawContours(
             image_with_contours, 
             contours, 
-            contourIdx=-1,              
+            contourIdx=-1, #绘制所有轮廓             
             color=(255, 255, 0),          
-            thickness=2                 
+            thickness=2         #宽2像素        
         )
+        #返回需要时list
+        contours_list = list(contours)
 
-        return image_with_contours, contours
+        return image_with_contours, contours_list
     except Exception as e:
         return None, None
