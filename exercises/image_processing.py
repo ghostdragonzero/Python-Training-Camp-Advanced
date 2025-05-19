@@ -27,4 +27,18 @@ def image_processing_pipeline(image_path):
     # 4. 使用 cv2.GaussianBlur() 进行高斯滤波。
     # 5. 使用 cv2.Canny() 进行边缘检测。
     # 6. 使用 try...except 包裹代码以处理可能的异常。
-    pass 
+    # 读取图像
+    image = cv2.imread(image_path)
+    if image is None:
+        print("错误无法读取图片")
+        return None
+    try:
+        image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image_blur = cv2.GaussianBlur(image_gray, (5, 5), 0)
+        image_result = cv2.Canny(image_blur, 100, 200)
+
+        return image_result
+    except Exception as e:
+        print(f"发生异常: {e}")
+        return None
+    

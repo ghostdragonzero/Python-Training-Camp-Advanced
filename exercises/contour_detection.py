@@ -29,4 +29,27 @@ def contour_detection(image_path):
     # 7. 使用 cv2.drawContours() 在副本上绘制轮廓。
     # 8. 返回绘制后的图像和轮廓列表。
     # 9. 使用 try...except 处理异常。
-    pass 
+    try:
+        image = cv2.imread(image_path)
+        if image is None:
+            return None, None
+
+        image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image_blur = cv2.GaussianBlur(image_gray, (5, 5), 0)
+        image_edges = cv2.Canny(image_blur, 100, 200)
+
+
+        contours, _ = cv2.findContours(image_edges, mode=cv2.RETR_LIST, method=cv2.CHAIN_APPROX_SIMPLE)
+
+        image_with_contours = image.copy()
+        cv2.drawContours(
+            image_with_contours, 
+            contours, 
+            contourIdx=-1,              
+            color=(255, 255, 0),          
+            thickness=2                 
+        )
+
+        return image_with_contours, contours
+    except Exception as e:
+        return None, None
