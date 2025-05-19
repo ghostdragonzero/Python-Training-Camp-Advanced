@@ -24,7 +24,29 @@ def calculate_iou(box1, box2):
     # 请在此处编写代码
     # (与 iou.py 中的练习相同，可以复用代码或导入)
     # 提示：计算交集面积和并集面积，然后相除。
-    pass
+    x_left = max(box1[0], box2[0])
+    y_top = max(box1[1], box2[1])
+    
+    # 确定相交区域的右下角坐标
+    x_right = min(box1[2], box2[2])
+    y_bottom = min(box1[3], box2[3])
+    
+    # 计算相交区域的面积
+    intersection_area = max(0, x_right - x_left) * max(0, y_bottom - y_top)
+    
+    # 计算两个边界框的面积
+    box1_area = (box1[2] - box1[0]) * (box1[3] - box1[1])
+    box2_area = (box2[2] - box2[0]) * (box2[3] - box2[1])
+    
+    # 计算并集面积
+    union_area = box1_area + box2_area - intersection_area
+    
+    if union_area == 0:
+        return 0
+
+    iou = intersection_area / union_area 
+    
+    return iou
 
 def nms(boxes, scores, iou_threshold):
     """
@@ -52,4 +74,30 @@ def nms(boxes, scores, iou_threshold):
     #    c. 找到 IoU 小于等于 iou_threshold 的索引 inds。
     #    d. 更新 order，只保留那些 IoU <= threshold 的框的索引 (order = order[inds + 1])。
     # 7. 返回 keep 列表。
-    pass 
+
+    if boxes is None:
+        return []
+    
+    boxes = np.array(boxes)
+    scores = np.array(scores)  
+    
+    # 4. 根据 scores 对边界框索引进行降序排序
+    order = np.argsort(scores)[::-1]
+    keep = []
+    
+    # 遍历所有边界框
+    while order.size > 0:
+        # 当前置信度最高的边界框索引
+        current_index = order[0]
+        keep.append(current_index)
+        
+        # 计算当前边界框与剩余边界框的 IoU
+        current_box = boxes[current_index]
+        remaining_boxes = boxes[order[1:]]
+        ious = np.array([calculate_iou(current_box, box) for box in remaining_boxes])
+        
+        # 保留 IoU 小于阈值的边界框
+        mask = ious < iou_threshold
+        order = order[1:][mask]
+    
+    return keep 

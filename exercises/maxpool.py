@@ -32,4 +32,23 @@ def maxpool(x, kernel_size, stride):
     # 5. 提取当前池化窗口 window = x[h_start:h_start+kernel_size, w_start:w_start+kernel_size]。
     # 6. 找到窗口中的最大值 np.max(window)。
     # 7. 将最大值存入输出数组 out[i, j]。
-    pass 
+    H, W = x.shape
+    # 计算输出维度
+    out_H = (H - kernel_size) // stride + 1
+    out_W = (W - kernel_size) // stride + 1
+    
+    # 初始化输出数组
+    output = np.zeros((out_H, out_W))
+    
+    # 滑动窗口取最大值
+    for i in range(out_H):
+        for j in range(out_W):
+            # 计算当前窗口位置
+            h_start = i * stride
+            w_start = j * stride
+            
+            # 提取窗口区域并取最大值
+            window = x[h_start:h_start+kernel_size, w_start:w_start+kernel_size]
+            output[i, j] = np.max(window)
+    
+    return output
